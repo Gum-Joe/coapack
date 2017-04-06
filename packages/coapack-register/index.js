@@ -24,12 +24,22 @@ class Register {
     let pluginInfo = {};
     if (typeof plugin === "object") {
       pluginInfo = plugin;
+      // Validate
+      if (!pluginInfo.hasOwnProperty("name")) {
+        // error, no name
+        throw new Error("Package given with no name! (ENONAME)");
+      } else if (!pluginInfo.hasOwnProperty("path")) {
+        // No path
+        pluginInfo.path = path.join(process.cwd(), "node_modules", pluginInfo.name);
+      } else if (pluginInfo.hasOwnProperty("path")) {
+        pluginInfo.path = path.resolve(pluginInfo.path);
+      }
     } else {
       // Only plugin name given
       // Get details
       pluginInfo = {
         name: plugin,
-        path: path.join(process.cwd(), plugin)
+        path: path.join(process.cwd(), "node_modules", plugin)
       };
     }
 

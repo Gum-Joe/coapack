@@ -6,9 +6,17 @@
   "repository": "https://github.com/Gum-Joe/coapack.git",
   "author": "Gum-Joe <kishansambhi@hotmail.co.uk>",
   "license": "MIT",
+  "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- -R spec",
+    "test": "mocha",
+    "travis:coverage": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
+  },
   "devDependencies": {
+    "chai": "^3.5.0",
     "eslint": "^3.19.0",
     "eslint-plugin-react": "^6.10.3",
-    "lerna": "2.0.0-beta.38"
+    "lerna": "2.0.0-beta.38",
+    "mocha": "^3.2.0"
   }
 }
