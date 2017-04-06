@@ -7,4 +7,4 @@ node_js:
 
 cache: yarn
 
-after_script: "yarn run travis:coverage"
+after_script: "npm i -g istanbul && yarn run travis:coverage"
