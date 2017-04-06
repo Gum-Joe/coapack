@@ -1,0 +1,9 @@
+{
+  "name": "coapack-utils",
+  "version": "0.1.0",
+  "description": "Utilities for coapack to help with jobs that most packages carry out & constants",
+  "main": "index.js",
+  "repository": "https://github.com/Gum-Joe/coapack.git",
+  "author": "Gum-Joe",
+  "license": "MIT"
+}

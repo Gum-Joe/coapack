@@ -1,0 +1,14 @@
+{
+  "name": "coapack",
+  "version": "0.1.0",
+  "description": "An application to make modular, light & customisable setup packages for your apps",
+  "main": "index.js",
+  "repository": "https://github.com/Gum-Joe/coapack.git",
+  "author": "Gum-Joe <kishansambhi@hotmail.co.uk>",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-plugin-react": "^6.10.3",
+    "lerna": "2.0.0-beta.38"
+  }
+}

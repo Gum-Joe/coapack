@@ -1,0 +1,12 @@
+{
+  "name": "coapack-register",
+  "version": "0.1.0",
+  "description": "Coapack module for registering plugins.  Crucial for coapack to work.",
+  "main": "index.js",
+  "repository": "https://github.com/Gum-Joe/coapack.git",
+  "author": "Gum-Joe",
+  "license": "MIT",
+  "dependencies": {
+    "coapack-utils": "0.1.0"
+  }
+}
