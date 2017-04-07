@@ -1,0 +1,13 @@
+{
+  "name": "coapack-core",
+  "version": "0.1.0",
+  "description": "The core of coapack.  Contains basic commands and functions, such as build and package.",
+  "main": "index.js",
+  "repository": "https://github.com/Gum-Joe/coapack.git",
+  "author": "Gum-Joe",
+  "license": "MIT",
+  "dependencies": {
+    "coapack-logger": "0.1.0",
+    "coapack-utils": "0.1.0"
+  }
+}

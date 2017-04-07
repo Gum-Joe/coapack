@@ -1,6 +1,6 @@
 // Coapack cli entry point
-const Cli = require("lib/cli");
-const commands = require("commands");
+const Cli = require("./lib/cli");
+const commands = require("./commands");
 const cli = new Cli(
   [
     [ "--color",  "Use colour"],
@@ -11,8 +11,11 @@ const cli = new Cli(
 
 cli.usage("<command> [options...]");
 
-for (let cmd in commands) {
-  if (commands.hasOwnProperty(cmd)) {
+for (let cmd of commands) {
+  if (commands.includes(cmd)) {
     cli.command(cmd.name, cmd.desc, cmd.code);
   }
 }
+
+// Parse + run
+cli.parse();

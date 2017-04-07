@@ -140,7 +140,7 @@ class Cli {
    */
   parse() {
     // Check for help
-    if (this.argv[0] === "--help" || this.argv.length === 0) {
+    if (this.argv[0] === "--help" || (this.argv.length === 0 && !this.parserOptions.subCommand)) {
       this.help();
     }
     // Command?

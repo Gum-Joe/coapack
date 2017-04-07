@@ -7,6 +7,7 @@
   "author": "Gum-Joe",
   "license": "MIT",
   "dependencies": {
-    "babel-polyfill": "^6.23.0"
+    "babel-polyfill": "^6.23.0",
+    "coapack-core": "0.1.0"
   }
 }

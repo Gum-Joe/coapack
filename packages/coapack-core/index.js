@@ -1,5 +1,5 @@
-#!/usr/bin/env node
-// Coapack entry point
+// The core of coapack.
+// Contains basic commands and functions, such as build and package.
 /**
 MIT License
 
@@ -23,5 +23,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+// Modules dependencies
+const build = require("./build");
 
-require("../packages/coapack-cli");
+module.exports = {
+  // All the commands
+  build
+};
