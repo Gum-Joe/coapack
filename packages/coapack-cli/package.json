@@ -1,0 +1,12 @@
+{
+  "name": "coapack-cli",
+  "version": "0.1.0",
+  "description": "Coapack entry point cli module, manages execution of coapack commands",
+  "main": "index.js",
+  "repository": "https://github.com/Gum-Joe/coapack.git",
+  "author": "Gum-Joe",
+  "license": "MIT",
+  "dependencies": {
+    "babel-polyfill": "^6.23.0"
+  }
+}

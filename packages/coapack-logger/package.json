@@ -1,0 +1,12 @@
+{
+  "name": "coapack-logger",
+  "version": "0.1.0",
+  "description": "Coapack package for logging",
+  "main": "index.js",
+  "repository": "https://github.com/Gum-Joe/coapack.git",
+  "author": "Gum-Joe",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^1.1.3"
+  }
+}

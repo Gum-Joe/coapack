@@ -1,6 +1,6 @@
 # coapack-utils
 Utilities for coapack to help with jobs that most packages carry out & constants
 
-## Copack Module Info.:
+## Coapack Module Information:
 - Dependency Level: Optional
 - Section: Core
