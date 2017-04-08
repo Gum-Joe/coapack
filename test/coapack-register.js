@@ -12,7 +12,7 @@ describe("coapack-register tests", () => {
     });
 
     it("should test registering a plugin with just a name", (done) => {
-      register.registerPlguin("chai");
+      register.registerPlugin("chai");
       expect(register.plugins).to.have.property("chai");
       expect(register.plugins.chai).to.deep.equal({
         name: "chai",
@@ -27,7 +27,7 @@ describe("coapack-register tests", () => {
         name: "chai",
         path: "node_modules/chai",
       };
-      register.registerPlguin(pluginsToTest);
+      register.registerPlugin(pluginsToTest);
       expect(register.plugins).to.have.property("chai");
       expect(register.plugins.chai).to.deep.equal(pluginsToTest);
       done();
@@ -37,19 +37,19 @@ describe("coapack-register tests", () => {
       const pluginsToTest = {
         name: "chai",
       };
-      register.registerPlguin(pluginsToTest);
+      register.registerPlugin(pluginsToTest);
       expect(register.plugins).to.have.property("chai");
       expect(register.plugins.chai).to.have.property("path");
       done();
     });
 
     it("should check register errors if name is not specified", (done) => {
-      expect(() => register.registerPlguin({})).to.throw("ENONAME");
+      expect(() => register.registerPlugin({})).to.throw("ENONAME");
       done();
     });
 
     it("should resolve the path specified", (done) => {
-      register.registerPlguin({
+      register.registerPlugin({
         name: "chai",
         path: "node_modules/chai"
       });
