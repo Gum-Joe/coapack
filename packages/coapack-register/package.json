@@ -7,6 +7,8 @@
   "author": "Gum-Joe",
   "license": "MIT",
   "dependencies": {
-    "coapack-utils": "0.1.0"
+    "chalk": "^1.1.3",
+    "coapack-logger": "0.1.0",
+    "which": "^1.2.14"
   }
 }

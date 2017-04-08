@@ -8,6 +8,7 @@
   "license": "MIT",
   "dependencies": {
     "coapack-logger": "0.1.0",
+    "coapack-register": "0.1.0",
     "coapack-utils": "0.1.0"
   }
 }

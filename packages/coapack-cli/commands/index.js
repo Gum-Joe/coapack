@@ -13,7 +13,8 @@ module.exports = [
     code(argv) {
       const cli = new Cli(
         [
-          ["--config", "Specify a config file"]
+          ["--config", "Specify a config file"],
+          ["--use-npm", "Force use npm for installing packages"]
         ],
         {
           script: "coapack-build",

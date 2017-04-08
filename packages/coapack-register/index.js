@@ -3,7 +3,10 @@
 /**
   * Module Dependencies
   */
+const Logger = require("coapack-logger");
 const path = require("path");
+const fs = require("fs");
+const install = require("./install");
 
 /**
   * Register class
@@ -12,12 +15,18 @@ const path = require("path");
 class Register {
   constructor() {
     this.plugins = {};
+    this.logger = new Logger({
+      name: "register"
+    });
+
+    // Add functions
+    this.install = install.bind(this);
   }
 
   /**
     * Register plugin
     */
-  registerPlguin(plugin) {
+  registerPlugin(plugin) {
     // Check of plugin is object
     // If it is, the user has already specified the plugin's details
     // So it can be dropped into object
@@ -35,6 +44,7 @@ class Register {
         pluginInfo.path = path.resolve(pluginInfo.path);
       }
     } else {
+      this.logger.debug(`Registering plguin ${plugin}...`);
       // Only plugin name given
       // Get details
       pluginInfo = {
@@ -43,10 +53,22 @@ class Register {
       };
     }
 
-    // Get package.json data
-    pluginInfo.pkgJSON = require(path.join(pluginInfo.path, "package.json"));
-    // Append
-    this.plugins[pluginInfo.name] = pluginInfo;
+    // Get package.json if it exists
+    fs.access(path.join(pluginInfo.path, "package.json"), fs.constants.R_OK | fs.constants.W_OK, (err) => {
+      if (err && err.code !== "ENOENT") {
+        // Some other error prevented us looking for the config
+        this.logger.throw(err);
+      } else if (err.code === "ENOENT") {
+        this.logger.debug(`Plugin ${pluginInfo.name} not installed.`);
+        pluginInfo.toInstall = true;
+      } else {
+        // Plugin installed
+        pluginInfo.pkgJSON = require(path.join(pluginInfo.path, "package.json"));
+      }
+
+      // Append
+      this.plugins[pluginInfo.name] = pluginInfo;
+    });
   }
 }
 
