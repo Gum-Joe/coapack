@@ -1,0 +1,12 @@
+{
+  "name": "coapack-setup-base",
+  "version": "0.1.0",
+  "description": "Coapack baseline setup",
+  "main": "index.js",
+  "repository": "https://github.com/Gum-Joe/coapack.git",
+  "author": "Gum-Joe",
+  "license": "MIT",
+  "coapack": {
+    "type": "setup"
+  }
+}

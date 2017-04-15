@@ -1,0 +1,12 @@
+{
+  "name": "coapack-setup-self-extracting",
+  "version": "0.1.0",
+  "description": "Coapack plugin for building a self extracting setup, the most basic form of coapack setup",
+  "main": "index.js",
+  "repository": "https://github.com/Gum-Joe/coapack.git",
+  "author": "Gum-Joe",
+  "license": "MIT",
+  "coapack": {
+    "type": "setup"
+  }
+}

@@ -1,15 +1,16 @@
-// Build function
+// Build prep. function
 // Modules dependencies
 const { constants } = require("coapack-utils");
+const build = require("./builder");
 const fs = require("fs");
 const pack = require("../package.json");
 const defaultBuild = require("./default");
 const Logger = require("coapack-logger");
 const logger = new Logger({
-  name: "build"
+  name: constants.BUILD_LOGGER_NAME
 });
 
-module.exports = function build(args, config) {
+module.exports = function (args, config) {
   logger.info("Coapack build engine");
   logger.info(`v${pack.version}`);
   logger.info("");
@@ -18,7 +19,7 @@ module.exports = function build(args, config) {
   if (!config) {
     // Config not given as arg
     logger.debug("Looking for config...");
-    fs.access(constants.DEFAULT_CONFIG_NAME, fs.constants.R_OK | fs.constants.W_OK, (err) => {
+    fs.access(args.config || constants.DEFAULT_CONFIG_NAME, fs.constants.R_OK | fs.constants.W_OK, (err) => {
       if (err && err.code !== "ENOENT") {
         // Some other error prevented us looking for the config
         logger.throw(err);
@@ -29,9 +30,15 @@ module.exports = function build(args, config) {
         defaultBuild(args);
       } else {
         logger.debug("Config found.");
+        logger.debug("Reading config...");
+        config = require(args.config || constants.DEFAULT_CONFIG_NAME);
+        // Build
+        build(config);
       }
     });
   } else {
     logger.debug("Config specified.");
+    // Build
+    build(config, args);
   }
 };

@@ -2,6 +2,7 @@
 const { expect } = require("chai");
 const path = require("path");
 const Register = require("../packages/coapack-register");
+const chaiJSON = require(path.join(process.cwd(), "node_modules", "chai", "package.json"));
 let register;
 
 describe("coapack-register tests", () => {
@@ -14,11 +15,10 @@ describe("coapack-register tests", () => {
     it("should test registering a plugin with just a name", (done) => {
       register.registerPlugin("chai");
       expect(register.plugins).to.have.property("chai");
-      expect(register.plugins.chai).to.deep.equal({
-        name: "chai",
-        path: path.join(process.cwd(), "node_modules", "chai"),
-        pkgJSON: require(path.join(process.cwd(), "node_modules", "chai", "package.json"))
-      });
+      expect(register.plugins.chai).to.have.property("name");
+      expect(register.plugins.chai).to.have.property("path");
+      expect(register.plugins.chai.name).to.equal("chai");
+      expect(register.plugins.chai.path).to.equal(path.join(process.cwd(), "node_modules", "chai"));
       done();
     });
 

@@ -2,6 +2,7 @@
 // Installs packages that are missing
 const chalk = require("chalk");
 const { exec } = require("child_process");
+const path = require("path");
 const which = require("which");
 const YARN_INSTALL = " add";
 const NPM_INSTALL = " install";
@@ -17,22 +18,36 @@ const _installWith = (cmd, plugins, logger, cb) => {
   // Create install string
   let packages = "";
   for (let plugin in plugins) {
-    if (plugins.hasOwnProperty(plugin)) {
+    if (plugins.hasOwnProperty(plugin) && plugins[plugin].toInstall) {
       packages += chalk.magenta(plugins[plugin].name);
     }
   }
-  // Log
-  logger.info(`Installing packages ${packages}...`);
-  logger.debug(`${chalk.cyan("exec")} ${cmd} ${chalk.stripColor(packages)} --color`);
-  exec(`${cmd} ${chalk.stripColor(packages)}`, (err, stdout, stderr) => {
-    if (err) {
-      cb(err);
-    }
-    stdout.split("\n").forEach((out) => logger._log("stdout", "yellow", out));
-    stderr.split("\n").forEach((out) => logger._log("stderr", "red", out));
-    // Done!
+
+  // Only run install if there are packages to install
+  if (packages.length > 0) {
+    // Log
+    logger.info(`Installing packages ${packages}...`);
+    logger.debug(`${chalk.cyan("exec")} ${cmd} ${chalk.stripColor(packages)} --color`);
+    // Execute command to install
+    exec(`${cmd} ${chalk.stripColor(packages)}`, (err, stdout, stderr) => {
+      if (err) {
+        return cb(err);
+      }
+      stdout.split("\n").forEach((out) => logger._log("stdout", "yellow", out));
+      stderr.split("\n").forEach((out) => logger._log("stderr", "red", out));
+      // Now re-add to config
+      for (let plugin in plugins) {
+        if (plugins.hasOwnProperty(plugin)) {
+          // Add pkgJSON
+          plugins[plugin].pkgJSON = require(path.join(plugins[plugin].path, "package.json"));
+        }
+      }
+      // Done!
+      return cb(null);
+    });
+  } else {
     cb(null);
-  });
+  }
 };
 
 /**

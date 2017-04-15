@@ -4,7 +4,7 @@
   "description": "An application to make modular, light & customisable setup packages for your apps",
   "main": "index.js",
   "repository": "https://github.com/Gum-Joe/coapack.git",
-  "author": "Gum-Joe <kishansambhi@hotmail.co.uk>",
+  "author": "Gum-Joe",
   "license": "MIT",
   "scripts": {
     "bootstrap": "lerna bootstrap",

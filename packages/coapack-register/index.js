@@ -3,6 +3,7 @@
 /**
   * Module Dependencies
   */
+const chalk = require("chalk");
 const Logger = require("coapack-logger");
 const path = require("path");
 const fs = require("fs");
@@ -25,6 +26,7 @@ class Register {
 
   /**
     * Register plugin
+    * @param plugin {String} {Object} Plugin to register
     */
   registerPlugin(plugin) {
     // Check of plugin is object
@@ -52,23 +54,23 @@ class Register {
         path: path.join(process.cwd(), "node_modules", plugin)
       };
     }
-
     // Get package.json if it exists
     fs.access(path.join(pluginInfo.path, "package.json"), fs.constants.R_OK | fs.constants.W_OK, (err) => {
       if (err && err.code !== "ENOENT") {
         // Some other error prevented us looking for the config
         this.logger.throw(err);
-      } else if (err.code === "ENOENT") {
-        this.logger.debug(`Plugin ${pluginInfo.name} not installed.`);
+      } else if (err && err.code === "ENOENT") {
+        this.logger.debug(`Plugin ${chalk.magenta(pluginInfo.name)} not installed.`);
         pluginInfo.toInstall = true;
       } else {
         // Plugin installed
         pluginInfo.pkgJSON = require(path.join(pluginInfo.path, "package.json"));
+        pluginInfo.toInstall = false;
       }
 
-      // Append
-      this.plugins[pluginInfo.name] = pluginInfo;
     });
+    // Append
+    this.plugins[pluginInfo.name] = pluginInfo;
   }
 }
 
