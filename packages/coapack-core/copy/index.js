@@ -37,9 +37,9 @@ async function copyDirContentsTo(source, destination, options) {
   await getFiles(dirsInSource, source);
   // Resolve files & filter out dirs or files
   finalDirs = finalDirs.map(dir => path.isAbsolute(dir) ? dir : path.resolve(path.join(source, dir)));
+  let allDirs = finalDirs.filter(dir => fs.statSync(dir).isDirectory());
   finalDirs = finalDirs.filter(dir => !fs.statSync(dir).isDirectory());
   finalDirs = finalDirs.map(dir => path.isAbsolute(dir) ? dir : path.resolve(path.join(destination, dir)));
-  let allDirs = finalDirs.filter(dir => fs.statSync(dir).isDirectory());
   allDirs = allDirs.map(dir => path.resolve(path.join(destination, path.relative(source, dir))));
 
   // Counts
@@ -59,21 +59,29 @@ async function copyDirContentsTo(source, destination, options) {
   console.log(`${chalk.magenta(constants.COPY_LOGGER_NAME)} ${chalk.green("progress")}`);
   // Make directories
   function mkDirs() {
-    for (let dir of allDirs) {
-      mkdirp(dir, (err) => {
-        if (err) {
-          logger.throw(err);
-        }
-        pb.tick({
-          source: "mkdirp",
-          sign: ">>",
-          dest: path.relative(process.cwd(), dir)
+    return new Promise(async function(resolve, reject) {
+      for (let dir of allDirs) {
+        await mkdirp(dir, (err) => {
+          if (err) {
+            reject(err);
+          }
+          pb.tick({
+            source: "mkdirp",
+            sign: ">>",
+            dest: path.relative(process.cwd(), dir)
+          });
+          if (dir === allDirs[allDirs.length -1 ]) {
+            resolve();
+          }
         });
-      });
-    }
+      }
+    });
   }
-  await mkDirs();
+  await mkDirs()
+    .then(() => copyFiles())
+    .catch((err) => logger.throw(err));
 
+    // XXX: This fails on first run, saying one dir could not be copied
   function copyFiles() {
     // Copy files
     for (let file of finalDirs) {
@@ -85,8 +93,6 @@ async function copyDirContentsTo(source, destination, options) {
       };
       // destination
       const dest = path.join(destination, path.relative(source, file)); /* Get file name and append to destination */
-      console.log(dest);
-      debugger;
       // Copy
       const read = fs.createReadStream(file); // Create read stream
       read.on("error", handleError); // Handle error
@@ -100,7 +106,6 @@ async function copyDirContentsTo(source, destination, options) {
       read.pipe(write); // Run copy
     }
   }
-  await copyFiles();
 
 }
 
