@@ -84,6 +84,7 @@ module.exports = function genConfig() {
         outputFolder: answers.output
       };
       // Hand to normal build
+      console.log(""); // Log \n for neatness
       resolve(config);
     });
   });

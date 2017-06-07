@@ -1,7 +1,7 @@
 // File to copy over setup
 const chalk = require("chalk");
 const Logger = require("coapack-logger");
-const { constants } = require("coapack-utils");
+const { constants, matchRegexArray } = require("coapack-utils");
 const fs = require("fs");
 const mkdirp = require("mkdirp");
 const path = require("path");
@@ -23,7 +23,7 @@ async function copyDirContentsTo(source, destination, options) {
   const getFiles = (dirs, root) => {
     for (let dir of dirs) {
       const status = fs.statSync(path.join(root, dir));
-      if (!options.ignore.includes(dir) && status.isDirectory()) {
+      if (!matchRegexArray(dir, options.ignore) && status.isDirectory()) {
         // File is dir
         const thisDirDirs = fs.readdirSync(path.join(root, dir));
         finalDirs.push(path.join(root, dir));
@@ -41,84 +41,99 @@ async function copyDirContentsTo(source, destination, options) {
   finalDirs = finalDirs.filter(dir => !fs.statSync(dir).isDirectory());
   finalDirs = finalDirs.map(dir => path.isAbsolute(dir) ? dir : path.resolve(path.join(destination, dir)));
   allDirs = allDirs.map(dir => path.resolve(path.join(destination, path.relative(source, dir))));
+  allDirs = allDirs.filter(dir => !matchRegexArray(dir, options.ignore));
+
+  // Hacky solution to fix issue where dir would not copy if no subdris
+  allDirs.unshift(source);
 
   // Counts
   const filesToCopy = finalDirs.length;
   const dirsToMake = allDirs.length;
 
-  // Progress bar
-  let pb = new ProgressBar(`${chalk.magenta(constants.COPY_LOGGER_NAME)} ${chalk.green("progress")} :bar :percent :current/:total :source :sign :dest ETA: :eta`, {
-    total: filesToCopy + dirsToMake,
-    complete: "█",
-    incomplete: "▒",
-    width: 50
-  });
 
   // Copy
   // Read file and write
   console.log(`${chalk.magenta(constants.COPY_LOGGER_NAME)} ${chalk.green("progress")}`);
   // Make directories
-  function mkDirs() {
+  function mkDirs(pb) {
     return new Promise(async function(resolve, reject) {
       for (let dir of allDirs) {
-        await mkdirp(dir, (err) => {
-          if (err) {
-            reject(err);
-          }
-          pb.tick({
-            source: "mkdirp",
-            sign: ">>",
-            dest: path.relative(process.cwd(), dir)
+        if (!matchRegexArray(dir, options.ignore)) {
+          await mkdirp(dir, (err) => {
+            if (err) {
+              reject(err);
+            }
+            pb.tick({
+              source: "mkdirp",
+              sign: ">>",
+              dest: path.relative(process.cwd(), dir)
+            });
+            if (dir === allDirs[allDirs.length -1 ]) {
+              resolve();
+            }
           });
-          if (dir === allDirs[allDirs.length -1 ]) {
-            resolve();
-          }
-        });
+        }
       }
     });
   }
-  await mkDirs()
-    .then(() => copyFiles())
-    .catch((err) => logger.throw(err));
 
     // XXX: This fails on first run, saying one dir could not be copied
-  function copyFiles() {
+  function copyFiles(pb) {
     // Copy files
-    for (let file of finalDirs) {
-      // Error handler
-      const handleError = (err) => {
-        read.destroy();
-        write.end();
-        logger.throw(err);
-      };
-      // destination
-      const dest = path.join(destination, path.relative(source, file)); /* Get file name and append to destination */
-      // Copy
-      const read = fs.createReadStream(file); // Create read stream
-      read.on("error", handleError); // Handle error
-      const write = fs.createWriteStream(dest); // Create write stream
-      write.on("error", handleError); // Handle error
-      write.on("finish", () => pb.tick({
-        source: path.relative(process.cwd(), file),
-        dest: path.relative(process.cwd(), dest),
-        sign: "->"
-      })); // What to do when done
-      read.pipe(write); // Run copy
-    }
+    return new Promise(async function(resolve, reject) {
+      for (let file of finalDirs) {
+        // Error handler
+        const handleError = (err) => {
+          read.destroy();
+          write.end();
+          logger.throw(err);
+        };
+        // destination
+        const dest = path.join(destination, path.relative(source, file)); /* Get file name and append to destination */
+        // Copy
+        const read = fs.createReadStream(file); // Create read stream
+        read.on("error", handleError); // Handle error
+        const write = fs.createWriteStream(dest); // Create write stream
+        write.on("error", handleError); // Handle error
+        write.on("finish", () => {
+          pb.tick({
+            source: path.relative(source, file),
+            dest: path.relative(source, dest),
+            sign: "->"
+          });
+          read.destroy();
+          write.end();
+        }); // What to do when done
+        await read.pipe(write); // Run copy
+      }
+    });
   }
+
+  return new Promise(async (resolve, reject) => {
+    // Progress bar
+    let pb = new ProgressBar(`${chalk.magenta(constants.COPY_LOGGER_NAME)} ${chalk.green("progress")} :bar :percent :current/:total :source :sign :dest ETA: :eta`, {
+      total: filesToCopy + dirsToMake,
+      complete: "█",
+      incomplete: "▒",
+      width: 50,
+      callback: () => { console.log(""); /* Log \n for neatness */ resolve(); }
+    });
+    await mkDirs(pb)
+      .then(() => copyFiles(pb))
+      .catch(err => reject(err));
+  });
 
 }
 
 module.exports = (source, options, destination) => {
   if (options.dir) {
-    logger.debug(`Copying dir ${source}...`);
+    logger.debug(`Copying dir ${path.relative(process.cwd(), source)} to ${path.relative(process.cwd(), destination)}...`);
     // Get setup type
     switch (options.mode) {
     case constants.copy.RECURSIVE_DIRECT:
-      copyDirContentsTo(source, destination, options);
-      break;
+      return copyDirContentsTo(source, destination, options);
     default:
-      logger.info("Unknown mode");
+      logger.err("Unknown copy mode");
     }
   }
 };

@@ -1,0 +1,14 @@
+{
+  "name": "coapack-testing",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Coapack module for testing build",
+  "main": "index.js",
+  "repository": "https://github.com/Gum-Joe/coapack.git",
+  "author": "Gum-Joe",
+  "license": "MIT",
+  "dependencies": {
+    "coapack-setup-base": "0.1.0",
+    "coapack-setup-self-extracting": "0.1.0"
+  }
+}
