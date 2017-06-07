@@ -9,6 +9,7 @@
   "license": "MIT",
   "dependencies": {
     "coapack-setup-base": "0.1.0",
-    "coapack-setup-self-extracting": "0.1.0"
+    "coapack-setup-self-extracting": "0.1.0",
+    "npm": "^5.0.3"
   }
 }
